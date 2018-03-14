@@ -45,7 +45,7 @@ function createUser(req, res, next) {
 
 function loginUser(req, res, next) {
 	db.one(`SELECT * FROM users WHERE username = '${req.username}'`, {
-			username: req.username,
+			username: req.username
     })
     .then(user => {
         console.log('this is the user when you loginUser', user);
@@ -70,7 +70,55 @@ function loginUser(req, res, next) {
     });
 }
 
+function editProfile(req, res, next) {
+    console.log('req.body', req);
+    db.one(`SELECT * FROM users WHERE username = '${req.username}'`, {
+        username: req.username
+    })
+    .then(user => {
+        console.log('this is user when editing profile', user)
+        bcrypt.compare(req.password, user.password, (err, valid) => {
+            if (valid) {
+                let newUsername = req.newUsername;
+                let email = req.email;
+                if (newUsername === '') {
+                    newUsername = user.username;
+                }
+                if (email === '') {
+                    email = user.email_address;
+                }
+
+                db.one(`UPDATE users SET username = '${newUsername}', email_address = '${email}' WHERE username ='${req.username}'`)
+                .then(() => {
+                    db.any(`SELECT * FROM users WHERE username = '${newUsername}'`)
+                    .then(user => {
+
+                        let token = utils.generateToken(user);
+
+                        res.json({
+                            user: user,
+                            token: token
+                        })
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    })
+                })
+                .catch(err => {
+                    console.log(err);
+                })
+            } else {
+                return res.status(404).json({
+                    error: true,
+                    message: 'Password is incorrect'
+                })
+            }
+        })
+    })
+}
+
 module.exports = {
 	createUser: createUser,
-	loginUser: loginUser,
+    loginUser: loginUser,
+    editProfile: editProfile
 };

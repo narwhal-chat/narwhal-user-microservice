@@ -43,6 +43,8 @@ app.post('/login', (req, res, next) => {
 
 app.post('/editProfile', (req, res, next) => {
 	console.log('edit profile in microservice', req.body);
+	db.editProfile(req.body, res, next) 
+
 })
 
 // Listening to port
