@@ -41,5 +41,9 @@ app.post('/login', (req, res, next) => {
 	db.loginUser({ username: req.body.username, password: req.body.password }, res, next);
 });
 
+app.post('/editProfile', (req, res, next) => {
+	console.log('edit profile in microservice', req.body);
+})
+
 // Listening to port
 app.listen(PORT);
