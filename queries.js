@@ -38,8 +38,18 @@ function createUser(req, res, next) {
             });
     })
     .catch(function(err) {
-        console.log(err);
-        return next(err);
+        console.log('Error In Backend', err.detail)
+        let detail = err.constraint;
+        let message = '';
+        if( err.constraint === 'user_ak_email_address') {
+            message = 'E-mail already exists'
+        } else {
+            message = 'Username already exists'
+        }
+        return res.status(404).json({
+            error: true,
+            message: message
+        })
     });
 }
 
@@ -48,7 +58,6 @@ function loginUser(req, res, next) {
 			username: req.username
     })
     .then(user => {
-        console.log('this is the user when you loginUser', user);
         bcrypt.compare(req.password, user.password, (err, valid) => {
             if (!valid) {
                 return res.status(404).json({
@@ -76,7 +85,6 @@ function editProfile(req, res, next) {
         username: req.username
     })
     .then(user => {
-        console.log('this is user when editing profile', user)
         bcrypt.compare(req.password, user.password, (err, valid) => {
             if (valid) {
                 let newUsername = req.newUsername;
@@ -88,11 +96,10 @@ function editProfile(req, res, next) {
                     email = user.email_address;
                 }
 
-                db.one(`UPDATE users SET username = '${newUsername}', email_address = '${email}' WHERE username ='${req.username}'`)
+                db.any(`UPDATE users SET username = '${newUsername}', email_address = '${email}' WHERE username ='${req.username}'`)
                 .then(() => {
                     db.any(`SELECT * FROM users WHERE username = '${newUsername}'`)
                     .then(user => {
-
                         let token = utils.generateToken(user);
 
                         res.json({
@@ -101,13 +108,26 @@ function editProfile(req, res, next) {
                         })
                     })
                     .catch(err => {
-                        console.log(err);
+                        console.log('error getting user data');
                     })
                 })
                 .catch(err => {
-                    console.log(err);
+                    console.log('error 2');
+                    let detail = err.constraint;
+                    let message = '';
+                    if( detail === 'user_ak_email_address') {
+                        message = 'E-mail already exists'
+                    } else if (detail === 'user_ak_username') {
+                        message = 'Username already exists'
+                    }
+
+                    return res.status(404).json({
+                        error: true,
+                        message: message
+                    })
                 })
             } else {
+                console.log('error 3');
                 return res.status(404).json({
                     error: true,
                     message: 'Password is incorrect'
