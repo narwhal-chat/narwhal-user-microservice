@@ -1,0 +1,29 @@
+{
+  "name": "narwhal-user",
+  "version": "1.0.0",
+  "description": "User Authentication Microservice for Narwhal Chat",
+  "main": "server.js",
+  "scripts": {
+    "test": "node server.js",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/narwhal-chat/narwhal-user-microservice.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/narwhal-chat/narwhal-user-microservice/issues"
+  },
+  "homepage": "https://github.com/narwhal-chat/narwhal-user-microservice#readme",
+  "dependencies": {
+    "bcrypt": "^1.0.3",
+    "bluebird": "^3.5.1",
+    "body-parser": "^1.18.2",
+    "dotenv": "^5.0.1",
+    "express": "^4.16.2",
+    "jsonwebtoken": "^8.2.0",
+    "pg-promise": "^8.2.1"
+  }
+}
