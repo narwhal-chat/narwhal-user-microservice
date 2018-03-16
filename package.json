@@ -25,5 +25,8 @@
     "express": "^4.16.2",
     "jsonwebtoken": "^8.2.0",
     "pg-promise": "^8.2.1"
+  },
+  "engines": {
+    "node": "7.9.0"
   }
 }

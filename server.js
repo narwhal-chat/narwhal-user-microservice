@@ -8,7 +8,7 @@ const bcrypt = require('bcrypt');
 const db = require('./queries');
 const util = require('./utility');
 
-const PORT = 3033;
+const PORT = process.env.PORT || 3033;
 
 // Body Parser Middleware
 app.use(bodyParser.json());

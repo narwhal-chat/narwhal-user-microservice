@@ -7,7 +7,7 @@ const options = {
 const bcrypt = require('bcrypt');
 
 const pgp = require('pg-promise')(options);
-const connectionString = 'postgres://localhost:5432/narwhal';
+const connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/narwhal';
 const db = pgp(connectionString);
 
 // add query functions
