@@ -28,7 +28,7 @@ function createUser(req, res, next) {
     )
     .then(() => {
         var token = utils.generateToken(user);
-        db.one(`SELECT * FROM users WHERE username = '${user.username}'`, {
+        db.one("SELECT * FROM users WHERE username = ${username}", {
                 username: user.username,
             })
             .then(data => {
@@ -39,7 +39,7 @@ function createUser(req, res, next) {
             });
     })
     .catch(function(err) {
-        // console.log('Error In Backend', err)
+        console.log('Error In Backend', err)
         let detail = err.constraint;
         let message = '';
         if( err.constraint === 'user_ak_email_address') {
@@ -55,7 +55,7 @@ function createUser(req, res, next) {
 }
 
 function loginUser(req, res, next) {
-	db.one(`SELECT * FROM users WHERE username = '${req.username}'`, {
+	db.one("SELECT * FROM users WHERE username = ${username}", {
 			username: req.username
     })
     .then(user => {
@@ -82,7 +82,7 @@ function loginUser(req, res, next) {
 
 function editProfile(req, res, next) {
     console.log('req.body', req);
-    db.one(`SELECT * FROM users WHERE username = '${req.username}'`, {
+    db.one("SELECT * FROM users WHERE username = ${username}", {
         username: req.username
     })
     .then(user => {
