@@ -31,10 +31,14 @@ app.post('/register', (req, res, next) => {
 		password: hash,
 		email_address: body.email_address,
 		avatar: body.avatar,
-		create_date: body.create_date,
+		create_date: body.create_date
 	};
+	
+	res.json({
+		message: 'success'
+	})
 
-	db.createUser(user, res, next);
+	// db.createUser(user, res, next);
 });
 
 app.post('/login', (req, res, next) => {
