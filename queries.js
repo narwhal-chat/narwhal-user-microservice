@@ -38,7 +38,7 @@ function createUser(req, res, next) {
             });
     })
     .catch(function(err) {
-        console.log('Error In Backend', err.detail)
+        console.log('Error In Backend', err)
         let detail = err.constraint;
         let message = '';
         if( err.constraint === 'user_ak_email_address') {
