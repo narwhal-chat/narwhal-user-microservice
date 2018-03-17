@@ -17,13 +17,13 @@ function createUser(req, res, next) {
 		username: req.username,
 		password: req.password,
 		email_address: req.email_address,
-		avatar: 'avatar',
-		create_date: req.create_date,
-	};
+		avatar: 'avatar'
+    };
+    console.log('this is the user', user)
 
 	db.none(
-        'insert into users(username, password, email_address, avatar, create_date)' +
-            'values(${username}, ${password}, ${email_address}, ${avatar}, ${create_date})',
+        'insert into users(username, password, email_address, avatar)' +
+            'values(${username}, ${password}, ${email_address}, ${avatar})',
         user
     )
     .then(() => {
