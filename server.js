@@ -25,20 +25,16 @@ app.post('/register', (req, res, next) => {
 	var body = req.body;
 	console.log('body in register post', body);
 
-	// var hash = bcrypt.hashSync(body.password.trim(), 10);
-	// var user = {
-	// 	username: body.username,
-	// 	password: hash,
-	// 	email_address: body.email_address,
-	// 	avatar: body.avatar,
-	// 	create_date: body.create_date
-	// };
-	
-	res.json({
-		message: 'success'
-	})
+	var hash = bcrypt.hashSync(body.password.trim(), 10);
+	var user = {
+		username: body.username,
+		password: hash,
+		email_address: body.email_address,
+		avatar: body.avatar,
+		create_date: body.create_date
+	};
 
-	// db.createUser(user, res, next);
+	db.createUser(user, res, next);
 });
 
 app.post('/login', (req, res, next) => {

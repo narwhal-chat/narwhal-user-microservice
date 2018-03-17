@@ -12,6 +12,7 @@ const db = pgp(connectionString);
 
 // add query functions
 function createUser(req, res, next) {
+    console.log('THIS IS THE CONNECTION STRING', connectionString);
 	var user = {
 		username: req.username,
 		password: req.password,
@@ -38,7 +39,7 @@ function createUser(req, res, next) {
             });
     })
     .catch(function(err) {
-        console.log('Error In Backend', err)
+        // console.log('Error In Backend', err)
         let detail = err.constraint;
         let message = '';
         if( err.constraint === 'user_ak_email_address') {
