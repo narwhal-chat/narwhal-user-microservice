@@ -10,7 +10,7 @@ function generateToken(user) {
 	};
 
 	return (token = jwt.sign(u, 'asdfvadasfdfasdfcv3234asdf', {
-		expiresIn: 60 * 60 * 24, //expires in 24 hours
+		expiresIn: 60 * 60 * 10 //expires in 24 hours
 	}));
 }
 

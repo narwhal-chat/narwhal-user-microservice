@@ -7,19 +7,17 @@ const options = {
 const bcrypt = require('bcrypt');
 
 const pgp = require('pg-promise')(options);
-const connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/narwhal';
+const connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/narwhal_users';
 const db = pgp(connectionString);
 
 // add query functions
 function createUser(req, res, next) {
-    console.log('THIS IS THE CONNECTION STRING', connectionString);
 	var user = {
 		username: req.username,
 		password: req.password,
 		email_address: req.email_address,
 		avatar: 'avatar'
     };
-    console.log('this is the user', user)
 
 	db.none(
         'insert into users(username, password, email_address, avatar)' +
@@ -66,12 +64,19 @@ function loginUser(req, res, next) {
                     message: 'Username or Password is Wrong',
                 });
             }
+            let userData = {
+                id: user.id,
+                username: user.username,
+                email_address: user.email_address,
+                avatar: user.avatar,
+                create_data: user.create_date
+            }
 
-            let token = utils.generateToken(user);
+            let token = utils.generateToken(userData);
 
             res.json({
-                user: user,
-                token: token,
+                user: userData,
+                token: token
             });
         });
     })
@@ -101,10 +106,17 @@ function editProfile(req, res, next) {
                 .then(() => {
                     db.any(`SELECT * FROM users WHERE username = '${newUsername}'`)
                     .then(user => {
-                        let token = utils.generateToken(user);
+                        let userData = {
+                                id: user.id,
+                                username: user.username,
+                                email_address: user.email_address,
+                                avatar: user.avatar,
+                                create_data: user.create_date
+                            }
+                        let token = utils.generateToken(userData);
 
                         res.json({
-                            user: user,
+                            user: userData,
                             token: token
                         })
                     })
