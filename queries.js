@@ -69,8 +69,9 @@ function loginUser(req, res, next) {
                 username: user.username,
                 email_address: user.email_address,
                 avatar: user.avatar,
-                create_data: user.create_date
+                create_date: user.create_date
             }
+            console.log('userdata', userData);
 
             let token = utils.generateToken(userData);
 
@@ -81,7 +82,10 @@ function loginUser(req, res, next) {
         });
     })
     .catch(error => {
-        console.error(error);
+        return res.status(404).json({
+            error: true,
+            message: 'Username does not exist'
+        })
     });
 }
 
@@ -111,7 +115,7 @@ function editProfile(req, res, next) {
                                 username: user.username,
                                 email_address: user.email_address,
                                 avatar: user.avatar,
-                                create_data: user.create_date
+                                create_date: user.create_date
                             }
                         let token = utils.generateToken(userData);
 
