@@ -99,7 +99,8 @@ function editProfile  (req, res, next) {
                 console.log('error 3');
                 return res.status(401).json({
                     error: true,
-                    message: 'Password is incorrect'
+                    message: 'Password is incorrect',
+                    errorType: 'password'
                 })
             }
             let newUsername = req.newUsername;
@@ -128,14 +129,18 @@ function editProfile  (req, res, next) {
 				.catch(err => {
 					console.log('error 2');
 					let detail = err.constraint;
-					let message = '';
+                    let message = '';
+                    let errorType = '';
 					if (detail === 'user_ak_email_address') {
-						message = 'E-mail already exists';
+                        message = 'E-mail already exists';
+                        errorType = 'email';
+                        
 					} else if (detail === 'user_ak_username') {
-						message = 'Username already exists';
+                        message = 'Username already exists';
+                        errorType = 'username';
 					}
 
-					return res.status(401).json({ error: true, message: message });
+					return res.status(401).json({ error: true, message: message, errorType: errorType});
 				});
         })
     })
