@@ -5,7 +5,7 @@ const router = express.Router();
 const bodyParser = require('body-parser');
 const app = express();
 const bcrypt = require('bcrypt');
-const db = require('./queries');
+const db = require('./db/queries');
 const util = require('./utility');
 
 const PORT = process.env.PORT || 3033;

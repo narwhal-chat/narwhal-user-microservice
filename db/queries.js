@@ -1,7 +1,6 @@
 const promise = require('bluebird');
-const utils = require('./utility.js');
+const utils = require('../utility.js');
 const options = {
-	// Initialization Options
 	promiseLib: promise,
 };
 const bcrypt = require('bcrypt');
@@ -89,68 +88,59 @@ function loginUser(req, res, next) {
     });
 }
 
-function editProfile(req, res, next) {
+function editProfile  (req, res, next) {
     console.log('req.body', req);
     db.one("SELECT * FROM users WHERE username = ${username}", {
         username: req.username
     })
     .then(user => {
         bcrypt.compare(req.password, user.password, (err, valid) => {
-            if (valid) {
-                let newUsername = req.newUsername;
-                let email = req.email;
-                if (newUsername === '') {
-                    newUsername = user.username;
-                }
-                if (email === '') {
-                    email = user.email_address;
-                }
-
-                db.any(`UPDATE users SET username = '${newUsername}', email_address = '${email}' WHERE username ='${req.username}'`)
-                .then(() => {
-                    db.any(`SELECT * FROM users WHERE username = '${newUsername}'`)
-                    .then(user => {
-                        let userData = {
-                                id: user.id,
-                                username: user.username,
-                                email_address: user.email_address,
-                                avatar: user.avatar,
-                                create_date: user.create_date
-                            }
-                        let token = utils.generateToken(userData);
-
-                        res.json({
-                            user: userData,
-                            token: token
-                        })
-                    })
-                    .catch(err => {
-                        console.log('error getting user data');
-                    })
-                })
-                .catch(err => {
-                    console.log('error 2');
-                    let detail = err.constraint;
-                    let message = '';
-                    if( detail === 'user_ak_email_address') {
-                        message = 'E-mail already exists'
-                    } else if (detail === 'user_ak_username') {
-                        message = 'Username already exists'
-                    }
-
-                    return res.status(404).json({
-                        error: true,
-                        message: message
-                    })
-                })
-            } else {
+            if (!valid) {
                 console.log('error 3');
-                return res.status(404).json({
+                return res.status(401).json({
                     error: true,
                     message: 'Password is incorrect'
                 })
             }
+            let newUsername = req.newUsername;
+			let email = req.email;
+			if (newUsername === '') {
+				newUsername = user.username;
+			}
+			if (email === '') {
+				email = user.email_address;
+			}
+
+			db.any(`UPDATE users SET username = '${newUsername}', email_address = '${email}' WHERE username = '${req.username}'`)
+				.then(() => {
+					db.one(`SELECT * FROM users WHERE username = '${newUsername}'`)
+						.then(user => {
+                            console.log('yay', user)
+							let userData = { id: user.id, username: user.username, email_address: user.email_address, avatar: user.avatar, create_date: user.create_date };
+							let token = utils.generateToken(userData);
+
+							res.json({ user: userData, token: token });
+						})
+						.catch(err => {
+							console.log('error getting user data');
+						});
+				})
+				.catch(err => {
+					console.log('error 2');
+					let detail = err.constraint;
+					let message = '';
+					if (detail === 'user_ak_email_address') {
+						message = 'E-mail already exists';
+					} else if (detail === 'user_ak_username') {
+						message = 'Username already exists';
+					}
+
+					return res.status(401).json({ error: true, message: message });
+				});
         })
+    })
+    .catch (err => {
+        console.log(err)
     })
 }
 
