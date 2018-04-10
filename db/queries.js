@@ -104,15 +104,19 @@ function editProfile  (req, res, next) {
                 })
             }
             let newUsername = req.newUsername;
-			let email = req.email;
+            let email = req.email;
+            let avatar = req.avatar;
 			if (newUsername === '') {
 				newUsername = user.username;
 			}
 			if (email === '') {
 				email = user.email_address;
-			}
+            }
+            if (avatar === '') {
+                avatar = user.avatar;
+            }
 
-			db.any(`UPDATE users SET username = '${newUsername}', email_address = '${email}' WHERE username = '${req.username}'`)
+			db.any(`UPDATE users SET username = '${newUsername}', email_address = '${email}', avatar = '${avatar}' WHERE username = '${req.username}'`)
 				.then(() => {
 					db.one(`SELECT * FROM users WHERE username = '${newUsername}'`)
 						.then(user => {
@@ -135,7 +139,8 @@ function editProfile  (req, res, next) {
                         message = 'E-mail already exists';
                         errorType = 'email';
                         
-					} else if (detail === 'user_ak_username') {
+                    }
+                    if (detail === 'user_ak_username') {
                         message = 'Username already exists';
                         errorType = 'username';
 					}
