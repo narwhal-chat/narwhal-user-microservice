@@ -19,14 +19,14 @@ function createUser(req, res, next) {
 
   // Choose a random default avatar for the new user
   const defaultUserAvatars = [
-    'https://s3.us-east-2.amazonaws.com/dev-narwhal-avatars/user-default-avatars/User+Avatar+1.svg',
-    'https://s3.us-east-2.amazonaws.com/dev-narwhal-avatars/user-default-avatars/User+Avatar+2.svg',
-    'https://s3.us-east-2.amazonaws.com/dev-narwhal-avatars/user-default-avatars/User+Avatar+3.svg',
-    'https://s3.us-east-2.amazonaws.com/dev-narwhal-avatars/user-default-avatars/User+Avatar+4.svg',
-    'https://s3.us-east-2.amazonaws.com/dev-narwhal-avatars/user-default-avatars/User+Avatar+5.svg',
-    'https://s3.us-east-2.amazonaws.com/dev-narwhal-avatars/user-default-avatars/User+Avatar+6.svg',
-    'https://s3.us-east-2.amazonaws.com/dev-narwhal-avatars/user-default-avatars/User+Avatar+7.svg',
-    'https://s3.us-east-2.amazonaws.com/dev-narwhal-avatars/user-default-avatars/User+Avatar+8.svg'
+    'https://s3-us-west-1.amazonaws.com/narwhalavatar/user-default-avatars/User+Avatar+1.svg',
+    'https://s3-us-west-1.amazonaws.com/narwhalavatar/user-default-avatars/User+Avatar+2.svg',
+    'https://s3-us-west-1.amazonaws.com/narwhalavatar/user-default-avatars/User+Avatar+4.svg',
+    'https://s3-us-west-1.amazonaws.com/narwhalavatar/user-default-avatars/User+Avatar+3.svg',
+    'https://s3-us-west-1.amazonaws.com/narwhalavatar/user-default-avatars/User+Avatar+5.svg',
+    'https://s3-us-west-1.amazonaws.com/narwhalavatar/user-default-avatars/User+Avatar+6.svg',
+    'https://s3-us-west-1.amazonaws.com/narwhalavatar/user-default-avatars/User+Avatar+7.svg',
+    'https://s3-us-west-1.amazonaws.com/narwhalavatar/user-default-avatars/User+Avatar+8.svg'
   ];
   user.avatar = defaultUserAvatars[Math.floor(Math.random() * defaultUserAvatars.length)];
 
