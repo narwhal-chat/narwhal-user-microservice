@@ -4,7 +4,7 @@
   "description": "User Authentication Microservice for Narwhal Chat",
   "main": "server.js",
   "scripts": {
-    "test": "node server.js",
+    "test": "node test.js",
     "start": "node server.js"
   },
   "repository": {
