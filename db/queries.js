@@ -17,7 +17,7 @@ function createUser(req, res, next) {
     email_address: req.email_address
   };
 
-  // Choose a random default avatar for the new user
+  // Define all of the default user avatars
   const defaultUserAvatars = [
     'https://s3-us-west-1.amazonaws.com/narwhalavatar/user-default-avatars/User+Avatar+1.svg',
     'https://s3-us-west-1.amazonaws.com/narwhalavatar/user-default-avatars/User+Avatar+2.svg',
@@ -28,6 +28,7 @@ function createUser(req, res, next) {
     'https://s3-us-west-1.amazonaws.com/narwhalavatar/user-default-avatars/User+Avatar+7.svg',
     'https://s3-us-west-1.amazonaws.com/narwhalavatar/user-default-avatars/User+Avatar+8.svg'
   ];
+  // Randomly choose an avatar
   user.avatar = defaultUserAvatars[Math.floor(Math.random() * defaultUserAvatars.length)];
 
   db.none(
