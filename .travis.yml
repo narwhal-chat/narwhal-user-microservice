@@ -1,3 +1,10 @@
 language: node_js
 node_js:
-  - "7"
+- '7'
+deploy:
+  provider: heroku
+  api_key:
+    secure: rB3FVvFdY2oQ+VPNVG2/pYZLpbDCXkctxa49qAJKzdKnOPQgzpk5jXXjrOzsd2TAWgvDw4ZjuFy2fHr/gD0p/yP66nyePqvGvKNocazGqP2yrp8qWtLGgrfQF/I+Z6zgGK/J3H3Lj9obtojhApACfh5/gVhd7M4ECkYXaJTPgJt7QGLokcMvrx3diHUPbewZEU6MwBM2U8JEL0aLtnYtGQXQ+AxMaAmwsUUnv4sf4bDoV6qDeHgpASAUQLt9tZE1l6GN1f26Q6Xm+Kxc34YVtSNedsKimZBz9zzu3WrMErX3254qW0IaybZ9m2BUczQtZR5Cjw9PC0tYn2brSNw3fmrq4eguzI8+OgbM9TxMEiEPqffzIv/FD0h83HGwmFP7afYlgm0RtrYT+A7Ine04yc5h+fmH2FH74fmPewIpnpCP7HbZ/ONcmr/Z5qKlvR3vbHMZ2Ej8nooEGA202WCIKEft7jc6QEH/DBHaBVnWDq6kSmJPF3hgjecaziKzAUXHPOKvW91NYV9405S7yS9zSO9tjLlSXaAK9xChymP/EriaJmtIS+rmOweke2Bp/bsefze+er19oPRSvrJBmNLacNnmgO/vcWlbpG0ZUWyYsU3ihjcd5KcXWE3SGeubKSoB+Tbuh6j5aYUVAARiUpgdQzDJZkw6Vx6JcntnFbYWH7o=
+  app: narwhal-user-microservice
+  on:
+    repo: narwhal-chat/narwhal-user-microservice
