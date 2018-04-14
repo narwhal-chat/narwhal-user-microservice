@@ -52,10 +52,10 @@ function createUser(req, res, next) {
         console.log('Error In Backend', err)
         let detail = err.constraint;
         let message = '';
-        if( err.constraint === 'user_ak_email_address') {
-            message = 'E-mail already exists'
-        } else {
-            message = 'Username already exists'
+        if (detail === 'user_ak_username') {
+            message = 'Username already exists';
+        } else if (detail === 'user_ak_email_address') {
+            message = 'E-mail already ef xists';
         }
         return res.status(404).json({
             error: true,
