@@ -14,13 +14,6 @@ const PORT = process.env.PORT || 3033;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// // Set Static Path
-// if (process.env.NODE_ENV === 'production') {
-// 	app.use(express.static('client/build'));
-// } else {
-// 	app.use(express.static(__dirname + '/../client/build'));
-// }
-
 app.post('/register', (req, res, next) => {
 	var body = req.body;
 	console.log('body in register post', body);
@@ -31,21 +24,20 @@ app.post('/register', (req, res, next) => {
 		password: hash,
 		email_address: body.email_address,
 		avatar: body.avatar,
-		create_date: body.create_date
+		create_date: body.create_date,
 	};
 
-	db.createUser(user, res, next);
+	db.user.createUser(user, res, next);
 });
 
 app.post('/login', (req, res, next) => {
-	db.loginUser({ username: req.body.username, password: req.body.password }, res, next);
+	db.user.loginUser({ username: req.body.username, password: req.body.password }, res, next);
 });
 
 app.post('/editProfile', (req, res, next) => {
 	console.log('edit profile in microservice', req.body);
-	db.editProfile(req.body, res, next) 
-
-})
+	db.user.editProfile(req.body, res, next);
+});
 
 // Listening to port
 app.listen(PORT);
