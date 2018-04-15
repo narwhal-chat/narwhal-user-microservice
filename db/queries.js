@@ -137,20 +137,24 @@ const user = {
             .catch(e => {
                 errors.error = true;
                 errors.errorType.username = 'Username already exists';
+                console.log(errors)
             })
         const updateEmail = await db.any('UPDATE users SET email_address = ${email} where USERNAME = ${username}',
             { email, avatar, username: req.username })
             .catch(e => {
                 errors.error = true;
                 errors.errorType.email = 'Email already exists';
+                console.log(errors);
             })
             
         if (errors.error) {
-            return res.json(401).json(errors)
+            console.log('There was an error');
+            return res.status(401).json(errors)
         } else {
             const updatedUser = await db.one('SELECT * FROM users WHERE username = ${newUsername}', { newUsername })
             const token = await utils.generateToken(updatedUser);
-            res.json({ user: updatedUser, token})
+            return res.json({ user: updatedUser, token})
+            console.log('changed');
         }
     }
 
