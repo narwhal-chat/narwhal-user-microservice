@@ -150,7 +150,7 @@ const user = {
 
                 console.log('unique email', uniqueEmail)
                 console.log('unique username', uniqueUsername);
-
+                
 
                 if (currentUser.username === newUsername && currentUser.email_address !== email) {
                     console.log('changing email');
@@ -190,7 +190,7 @@ const user = {
                         try {
                             const updateUsername = await db.one('UPDATE users SET username = ${newUsername}, avatar = ${avatar} WHERE username = ${username}' +
                                 'RETURNING username',
-                                { newUsername: newUsername, avatar: avatar, username: currentUser.username},)
+                                { newUsername: newUsername, avatar: avatar, username: currentUser.username})
                                 console.log('UPDATEUSERNAME', updateUsername);
                         } catch (e) {
                             errors.error = true;
