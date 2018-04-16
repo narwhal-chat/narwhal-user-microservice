@@ -103,7 +103,7 @@ const user = {
 
     editProfile: async (req, res, next) => {
         let errors = {
-            error: false,
+            error: null,
             errorType: {
                 password: '',
                 username: '',
@@ -111,51 +111,212 @@ const user = {
             }
         }
         const currentUser = await db.one('SELECT * FROM users WHERE username = ${username}', { username: req.username })
-        const checkUser = await bcrypt.compare(req.password, currentUser.password, (err, valid) => {
+        try {
+            bcrypt.compare(req.password, currentUser.password, async(err, valid) => {
+                console.log('CHECKING PW')
+                if (!valid) {
+                    errors.error = true;
+                    errors.errorType.password = true
+                    console.log(errors);
+                    return(res.status(404).json(errors))
+                }
+                let newUsername = req.newUsername;
+                let email = req.email;
+                let avatar = req.avatar;
+                let uniqueUsername;
+                let uniqueEmail;
 
-            if (!valid) {
-              errors.error = true;
-              errors.errorType.password = 'Password is incorrect'
-              return res.status(401).json(errors)
-            }
+                // Checking to see if username/email is different
+                const checkUsername = await db.any('SELECT * FROM users WHERE username = ${newUsername}', { newUsername: newUsername })
+                const checkEmail = await db.any('SELECT * FROM users WHERE email_address = ${email}', { email: email })
 
-        });
+                if (checkUsername.length !== 0) {
+                    console.log('check un', checkUsername);
+                    if (newUsername === checkUsername.username) {
+                        uniqueUsername = false;
+                    } else {
+                        uniqueUsername = true;
+                    }
+                }
 
-        let newUsername = req.newUsername;
-        let email = req.email;
-        let avatar = req.avatar;
+                if (checkEmail.length !== 0) {
+                    console.log('checkem', checkEmail)
+                    if (email === checkEmail.email_address) {
+                        uniqueEmail = false;
+                    } else {
+                        uniqueEmail = true;
+                    }
+                }
 
-        if (newUsername === '') {
-            newUsername = currentUser.username;
-        }
-        if (email === '') {
-            email = currentUser.email_address;
-        }
+                console.log('unique email', uniqueEmail)
+                console.log('unique username', uniqueUsername);
 
-        const updateUsername = await db.any('UPDATE users SET username = ${newUsername}, avatar = ${avatar} WHERE username = ${username}', 
-            { newUsername, avatar, username: req.username})
-            .catch(e => {
-                errors.error = true;
-                errors.errorType.username = 'Username already exists';
-                console.log(errors)
-            })
-        const updateEmail = await db.any('UPDATE users SET email_address = ${email} where USERNAME = ${username}',
-            { email, avatar, username: req.username })
-            .catch(e => {
-                errors.error = true;
-                errors.errorType.email = 'Email already exists';
-                console.log(errors);
-            })
-            
-        if (errors.error) {
-            console.log('There was an error');
-            return res.status(401).json(errors)
-        } else {
-            const updatedUser = await db.one('SELECT * FROM users WHERE username = ${newUsername}', { newUsername })
-            const token = await utils.generateToken(updatedUser);
-            return res.json({ user: updatedUser, token})
-            console.log('changed');
-        }
+
+                if (currentUser.username === newUsername && currentUser.email_address !== email) {
+                    console.log('changing email');
+                    if (checkEmail.length === 0) {
+                        try {
+                            const updateEmail = await db.one('UPDATE users SET email_address = ${email}, avatar = ${avatar} where USERNAME = ${username}',
+                                { email: email, avatar: avatar, username: currentUser.username })
+                                console.log('updateEmail', updateEmail)
+                        } catch (e) {
+                            console.log(e);
+                        }
+                    } else {
+                        errors.error = true;
+                        errors.errorType.email = true;
+                    }
+                }
+
+                if (currentUser.email_address === email && currentUser.username !== newUsername) {
+                    console.log('changing username');
+                    if (checkUsername.length === 0) {
+                        try {
+                            console.log('hello in change un');
+                            const updateUsername = await db.one('UPDATE users SET username = ${newUsername}, avatar = ${avatar} WHERE username = ${username}',
+                                { newUsername: newUsername, avatar: avatar, username: currentUser.username})
+                            console.log('updateUsername', updateUsername);
+                        } catch (e) {
+                            console.log(e)
+                        }
+                    } else {
+                        errors.error = true;
+                        errors.errorType.username = true;
+                    }
+                }
+
+                if (currentUser.username !== newUsername && currentUser.email_address !== email) {
+                    if (checkUsername.length === 0 && checkEmail.length === 0) {
+                        try {
+                            const updateUsername = await db.one('UPDATE users SET username = ${newUsername}, avatar = ${avatar} WHERE username = ${username}' +
+                                'RETURNING username',
+                                { newUsername: newUsername, avatar: avatar, username: currentUser.username},)
+                                console.log('UPDATEUSERNAME', updateUsername);
+                        } catch (e) {
+                            errors.error = true;
+                            errors.errorType.username = true;
+                        }
+                        try {
+                            const updateEmail = await db.one('UPDATE users SET email_address = ${email}, avatar = ${avatar} where USERNAME = ${username}',
+                                { email: email, avatar: avatar, username: updateUsername.username })
+                                console.log('UPDATEMAIL', updateEmail);
+                        } catch (e) {
+                            errors.error = true;
+                            errors.errorType.email = true;
+                        }
+                    } else {
+                        errors.error = true;
+                        errors.errorType.email = true;
+                        errors.errorType.username = true;
+                    }
+                }
+
+                // if (!uniqueUsername && !uniqueEmail) {
+                //     errors.error = false;
+                // }
+
+                console.log('before if', errors);
+                if (errors.errorType.username || errors.errorType.email || errors.errorType.password) {
+                    console.log('There was an error');
+                    return res.status(401).json(errors)
+                } else {
+                    console.log('hello');
+                    const updatedUser = await db.one('SELECT * FROM users WHERE username = ${newUsername}', { newUsername: newUsername })
+                    console.log(updatedUser);
+                    const token = await utils.generateToken(updatedUser);
+                    return res.json({ user: updatedUser, token})
+                    console.log('changed');
+                }
+
+            });
+        } catch (e) {
+        // let newUsername = req.newUsername;
+        // let email = req.email;
+        // let avatar = req.avatar;
+
+        // // Checking to see if username/email is different
+        // const checkUsername = await db.any('SELECT * FROM users WHERE username = ${newUsername}', { newUsername: newUsername })
+        // const checkEmail = await db.any('SELECT * FROM users WHERE email_address = ${email}', { email: email })
+        // console.log('checkusername', checkUsername);
+        // console.log(checkUsername.length)
+        // console.log('checkemail', checkEmail);
+        // console.log(checkEmail.length);
+        // console.log('truthtest', currentUser.email_address === email);
+
+        // console.log('currentUser.username', currentUser.username);
+        // console.log('newUsername', newUsername);
+
+
+        // if (currentUser.username === newUsername && currentUser.email !== email) {
+        //     console.log('changing email');
+        //     if (checkEmail.length === 0) {
+        //         try {
+        //             const updateEmail = await db.one('UPDATE users SET email_address = ${email}, avatar = ${avatar} where USERNAME = ${username}',
+        //                 { email: email, avatar: avatar, username: currentUser.username })
+        //                 console.log('updateEmail', updateEmail)
+        //         } catch (e) {
+        //             console.log(e);
+        //         }
+        //     } else {
+        //         errors.error = true;
+        //         errors.errorType.email = true;
+        //     }
+        // }
+
+        // if (currentUser.email_address === email && currentUser.username !== newUsername) {
+        //     console.log('changing username');
+        //     if (checkUsername.length === 0) {
+        //         try {
+        //             const updateUsername = await db.one('UPDATE users SET username = ${newUsername}, avatar = ${avatar} WHERE username = ${username}',
+        //                 { newUsername: newUsername, avatar: avatar, username: currentUser.username})
+        //             console.log('updateUsername', updateUsername);
+        //         } catch (e) {
+        //             console.log(e)
+        //         }
+        //     } else {
+        //         errors.error = true;
+        //         errors.errorType.username = true;
+        //     }
+        // }
+
+        // if (checkUsername.length === 0 && checkEmail.length === 0) {
+        //     console.log('both are different');
+        //     try {
+        //         const updateUsername = await db.one('UPDATE users SET username = ${newUsername}, avatar = ${avatar} WHERE username = ${username}' +
+        //             'RETURNING username',
+        //             { newUsername: newUsername, avatar: avatar, username: currentUser.username},)
+        //     } catch (e) {
+        //         errors.error = true;
+		// 		errors.errorType.username = true;
+        //     }
+        //     try {
+        //         const updateEmail = await db.one('UPDATE users SET email_address = ${email}, avatar = ${avatar} where USERNAME = ${username}',
+        //             { email: email, avatar: avatar, username: updateUsername.username })
+        //     } catch (e) {
+        //         errors.error = true;
+		// 		errors.errorType.email = true;
+        //     }
+        // }
+
+        // if (checkUsername.length === 1 && checkEmail.length === 1) {
+        //     errors.error = true;
+        //     errors.errorType.email = true;
+        //     errors.errorType.username = true;
+        // }
+
+        // console.log('before if', errors);
+        // if (errors.errorType.username || errors.errorType.email || errors.errorType.password) {
+        //     console.log('There was an error');
+        //     return res.status(401).json(errors)
+        // } else {
+        //     console.log('hello');
+        //     const updatedUser = await db.one('SELECT * FROM users WHERE username = ${newUsername}', { newUsername: newUsername })
+        //     console.log(updatedUser);
+        //     const token = await utils.generateToken(updatedUser);
+        //     return res.json({ user: updatedUser, token})
+        //     console.log('changed');
+        // }
+    }
     }
 
 };
