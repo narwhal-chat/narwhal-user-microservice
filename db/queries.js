@@ -214,8 +214,8 @@ const user = {
 
                 if (currentUser.username === newUsername && currentUser.email_address === email) {
                     try {
-                        const updateUser = await db.one('UPDATE users SET avatar = ${avatar}',
-                        { avatar: avatar })
+                        const updateUser = await db.one('UPDATE users SET avatar = ${avatar} where USERNAME = ${username}',
+                        { avatar: avatar, username: newUsername })
                     } catch (e) {
                       errors.error = true;
                     }
