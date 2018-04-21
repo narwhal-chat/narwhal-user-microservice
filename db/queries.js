@@ -125,6 +125,7 @@ const user = {
                 let avatar = req.avatar;
                 let uniqueUsername;
                 let uniqueEmail;
+                console.log(avatar, "avatar");
 
                 // Checking to see if username/email is different
                 const checkUsername = await db.any('SELECT * FROM users WHERE username = ${newUsername}', { newUsername: newUsername })
