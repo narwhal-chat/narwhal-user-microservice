@@ -212,6 +212,15 @@ const user = {
                     }
                 }
 
+                if (currentUser.username === newUsername && currentUser.email_address === email) {
+                    try {
+                        const updateUser = await db.one('UPDATE users SET avatar = ${avatar}',
+                        { avatar: avatar })
+                    } catch (e) {
+                      errors.error = true;
+                    }
+                }
+
                 // if (!uniqueUsername && !uniqueEmail) {
                 //     errors.error = false;
                 // }
