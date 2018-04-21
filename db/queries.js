@@ -73,7 +73,7 @@ const user = {
                 if (!valid) {
                     return res.status(404).json({
                         error: true,
-                        message: 'Username or Password is Wrong',
+                        message: 'Username or password is wrong',
                     });
                 }
                 let userData = {
